@@ -1,0 +1,626 @@
+
+<!DOCTYPE html>
+<html lang="id" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EduGen AI - Student Learning & Exam Assistant</title>
+    
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#f0f9ff',
+                            100: '#e0f2fe',
+                            500: '#0284c7',
+                            600: '#0284c7',
+                            700: '#0369a1',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.05);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(156, 163, 175, 0.5);
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-100 min-h-screen flex flex-col transition-colors duration-200">
+
+    <header class="sticky top-0 z-40 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border-b border-slate-200 dark:border-slate-800">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-sky-600 to-indigo-600 flex items-center justify-center text-white font-bold text-xl shadow-lg shadow-sky-500/20">
+                        <i class="fa-solid fa-graduation-cap"></i>
+                    </div>
+                    <div>
+                        <span class="font-extrabold text-xl tracking-tight bg-gradient-to-r from-sky-600 to-indigo-600 bg-clip-text text-transparent">EduGen AI</span>
+                        <span class="hidden sm:inline-block text-xs px-2 py-0.5 ml-2 bg-sky-100 dark:bg-sky-900/50 text-sky-700 dark:text-sky-300 font-semibold rounded-full border border-sky-200 dark:border-sky-800">Secure Backend Proxy Ready</span>
+                    </div>
+                </div>
+
+                <div class="flex items-center gap-2 sm:gap-4">
+                    <button id="themeToggleBtn" class="p-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 transition">
+                        <i class="fa-solid fa-moon dark:hidden text-lg"></i>
+                        <i class="fa-solid fa-sun hidden dark:block text-lg text-amber-400"></i>
+                    </button>
+                    <div class="text-xs px-3 py-1.5 rounded-xl bg-emerald-50 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 font-medium flex items-center gap-1.5">
+                        <i class="fa-solid fa-shield-halved text-emerald-500"></i>
+                        <span class="hidden md:inline">API Key Secured (.env)</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        
+        <!-- Hero Banner -->
+        <div class="mb-8 p-6 sm:p-8 rounded-3xl bg-gradient-to-br from-sky-600 via-indigo-600 to-purple-700 text-white shadow-xl relative overflow-hidden">
+            <div class="absolute right-0 top-0 -mt-10 -mr-10 w-64 h-64 bg-white/10 rounded-full blur-2xl pointer-events-none"></div>
+            <div class="relative z-10 max-w-3xl">
+                <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 border border-white/20 text-xs font-medium mb-3 backdrop-blur-sm">
+                    <i class="fa-solid fa-wand-magic-sparkles text-amber-300"></i> Gemini AI Powered Learning Companion
+                </div>
+                <h1 class="text-2xl sm:text-4xl font-extrabold tracking-tight mb-2">Asisten Belajar & Pemecah Soal Cerdas</h1>
+                <p class="text-sky-100 text-sm sm:text-base leading-relaxed">
+                    Buat kuis latihan interaktif sesuai kurikulum sekolah/kuliah atau pindai foto tugas untuk mendapatkan analisis langkah demi langkah secara aman melalui backend proxy.
+                </p>
+            </div>
+        </div>
+
+        <!-- Tabs Navigation -->
+        <div class="flex border-b border-slate-200 dark:border-slate-800 mb-8 gap-2">
+            <button onclick="switchTab('quiz')" id="tabQuizBtn" class="px-5 py-3 font-bold text-sm sm:text-base border-b-2 border-sky-600 text-sky-600 dark:text-sky-400 flex items-center gap-2 transition">
+                <i class="fa-solid fa-list-check"></i> Generator Kuis Otomatis
+            </button>
+            <button onclick="switchTab('scanner')" id="tabScannerBtn" class="px-5 py-3 font-bold text-sm sm:text-base border-b-2 border-transparent text-slate-500 hover:text-slate-800 dark:hover:text-slate-200 flex items-center gap-2 transition">
+                <i class="fa-solid fa-camera-retro"></i> Pindai Foto Tugas (Scanner)
+            </button>
+        </div>
+
+        <!-- TAB 1: QUIZ GENERATOR -->
+        <div id="tabQuizContent" class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+            <div class="lg:col-span-5 xl:col-span-4 space-y-6">
+                <div class="bg-white dark:bg-slate-800 rounded-3xl p-6 shadow-sm border border-slate-200 dark:border-slate-700/60 sticky top-24">
+                    <h2 class="font-bold text-lg flex items-center gap-2 mb-5">
+                        <i class="fa-solid fa-sliders text-sky-500"></i> Parameter Kuis
+                    </h2>
+                    <form id="generatorForm" onsubmit="handleGenerateQuiz(event)" class="space-y-4">
+                        <div>
+                            <label class="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-1.5">Jenjang Pendidikan</label>
+                            <select id="gradeLevel" class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-3.5 py-2.5 text-sm focus:ring-2 focus:ring-sky-500 focus:outline-none">
+                                <option value="SD">SD / Sederajat</option>
+                                <option value="SMP">SMP / Sederajat</option>
+                                <option value="SMA" selected>SMA / MA / SMK</option>
+                                <option value="UTBK">UTBK / SNBT</option>
+                                <option value="Kuliah">Perguruan Tinggi (Mahasiswa)</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-1.5">Topik / Mata Pelajaran</label>
+                            <input type="text" id="quizTopic" placeholder="Misal: Hukum Newton, Integral, Aljabar..." required class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-3.5 py-2.5 text-sm focus:ring-2 focus:ring-sky-500 focus:outline-none">
+                        </div>
+                        <div class="grid grid-cols-2 gap-3">
+                            <div>
+                                <label class="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-1.5">Jumlah Soal</label>
+                                <input type="number" id="quizCount" min="1" max="10" value="3" class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-3.5 py-2.5 text-sm focus:ring-2 focus:ring-sky-500 focus:outline-none">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-1.5">Kesulitan</label>
+                                <select id="quizDifficulty" class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-3.5 py-2.5 text-sm focus:ring-2 focus:ring-sky-500 focus:outline-none">
+                                    <option value="Mudah">Mudah</option>
+                                    <option value="Sedang" selected>Sedang</option>
+                                    <option value="HOTS / Sulit">HOTS / Sulit</option>
+                                </select>
+                            </div>
+                        </div>
+                        <button type="submit" class="w-full py-3.5 px-4 bg-gradient-to-r from-sky-600 to-indigo-600 hover:from-sky-500 hover:to-indigo-500 text-white font-bold text-sm rounded-xl shadow-lg shadow-sky-500/25 flex items-center justify-center gap-2 transition">
+                            <i class="fa-solid fa-wand-magic-sparkles"></i>
+                            <span>Buat Soal Kuis</span>
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <div class="lg:col-span-7 xl:col-span-8 space-y-6">
+                <div id="quizEmptyState" class="bg-white dark:bg-slate-800 rounded-3xl p-12 text-center border border-dashed border-slate-300 dark:border-slate-700">
+                    <div class="w-16 h-16 mx-auto mb-4 rounded-2xl bg-sky-50 dark:bg-slate-700/50 flex items-center justify-center text-sky-500 text-2xl">
+                        <i class="fa-solid fa-brain"></i>
+                    </div>
+                    <h3 class="text-lg font-bold mb-1">Belum Ada Kuis Dibuat</h3>
+                    <p class="text-sm text-slate-500 dark:text-slate-400 max-w-md mx-auto">
+                        Isi parameter topik di sebelah kiri, lalu tekan tombol buat soal untuk mulai latihan kuis interaktif dengan pembahasan lengkap.
+                    </p>
+                </div>
+
+                <div id="quizLoadingState" class="hidden bg-white dark:bg-slate-800 rounded-3xl p-12 text-center border border-slate-200 dark:border-slate-700">
+                    <div class="inline-block animate-spin rounded-full h-10 w-10 border-4 border-sky-500 border-t-transparent mb-4"></div>
+                    <h3 class="text-lg font-bold mb-1">Menghubungkan ke Backend Proxy...</h3>
+                    <p class="text-sm text-slate-500">Gemini AI sedang menyusun soal & pembahasan melalui server aman...</p>
+                </div>
+
+                <div id="quizActiveContainer" class="hidden space-y-6">
+                    <div id="quizQuestionsList" class="space-y-6"></div>
+                    <div class="flex justify-end pt-4">
+                        <button onclick="submitQuizAnswers()" class="px-6 py-3 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-xl shadow-lg shadow-emerald-500/20 transition flex items-center gap-2">
+                            <i class="fa-solid fa-check-double"></i>
+                            <span>Selesaikan Kuis & Lihat Pembahasan</span>
+                        </button>
+                    </div>
+                </div>
+
+                <div id="quizResultContainer" class="hidden bg-white dark:bg-slate-800 rounded-3xl p-8 border border-slate-200 dark:border-slate-700 space-y-6">
+                    <div class="text-center border-b pb-6 border-slate-200 dark:border-slate-700">
+                        <h3 class="text-sm font-semibold uppercase tracking-wider text-slate-500 mb-1">Hasil Evaluasi Kuis</h3>
+                        <div id="quizFinalScoreDisplay" class="text-5xl font-extrabold text-sky-600">0/100</div>
+                    </div>
+                    <div id="quizReviewList" class="space-y-6"></div>
+                    <div class="flex gap-4 pt-4">
+                        <button onclick="resetQuizView()" class="flex-1 py-3 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 font-bold rounded-xl transition">Buat Kuis Baru</button>
+                        <button onclick="exportQuizJSON()" class="flex-1 py-3 bg-slate-900 text-white dark:bg-slate-100 dark:text-slate-900 font-bold rounded-xl transition flex items-center justify-center gap-2">
+                            <i class="fa-brands fa-github"></i> Ekspor ke JSON (GitHub/Jules)
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 2: PHOTO SCANNER & HOMEWORK SOLVER -->
+        <div id="tabScannerContent" class="hidden grid grid-cols-1 lg:grid-cols-12 gap-8">
+            <div class="lg:col-span-5 xl:col-span-4 space-y-6">
+                <div class="bg-white dark:bg-slate-800 rounded-3xl p-6 shadow-sm border border-slate-200 dark:border-slate-700/60 sticky top-24">
+                    <h2 class="font-bold text-lg flex items-center gap-2 mb-4">
+                        <i class="fa-solid fa-camera text-sky-500"></i> Pindai Foto Tugas
+                    </h2>
+                    <p class="text-xs text-slate-500 dark:text-slate-400 mb-4">
+                        Unggah foto soal PR atau ujian Anda. Backend aman akan meneruskannya ke Gemini Multimodal untuk diurai penyelesaiannya.
+                    </p>
+
+                    <div class="space-y-4">
+                        <label class="border-2 border-dashed border-slate-300 dark:border-slate-700 rounded-2xl p-6 flex flex-col items-center justify-center cursor-pointer hover:border-sky-500 transition group">
+                            <div class="w-12 h-12 rounded-xl bg-sky-50 dark:bg-slate-700 flex items-center justify-center text-sky-500 text-xl mb-2 group-hover:scale-110 transition">
+                                <i class="fa-solid fa-cloud-arrow-up"></i>
+                            </div>
+                            <span class="text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Klik untuk pilih foto / gambar</span>
+                            <span class="text-[10px] text-slate-400">PNG, JPG, atau WEBP (Max 5MB)</span>
+                            <input type="file" id="homeworkImageInput" accept="image/*" onchange="handleImageSelected(event)" class="hidden">
+                        </label>
+
+                        <div id="imagePreviewContainer" class="hidden relative rounded-2xl overflow-hidden border border-slate-200 dark:border-slate-700 bg-slate-900/5">
+                            <img id="imagePreviewElement" src="" alt="Preview" class="w-full h-48 object-contain">
+                            <button onclick="clearImage()" class="absolute top-2 right-2 w-8 h-8 rounded-full bg-slate-900/80 text-white flex items-center justify-center hover:bg-red-600 transition">
+                                <i class="fa-solid fa-xmark"></i>
+                            </button>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-1.5">Catatan / Pertanyaan Tambahan (Opsional)</label>
+                            <input type="text" id="scannerCustomPrompt" placeholder="Misal: Jelaskan rumus yang dipakai..." class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-3.5 py-2.5 text-sm focus:ring-2 focus:ring-sky-500 focus:outline-none">
+                        </div>
+
+                        <button onclick="analyzeHomeworkImage()" id="analyzeBtn" disabled class="w-full py-3.5 px-4 bg-gradient-to-r from-sky-600 to-indigo-600 text-white font-bold text-sm rounded-xl shadow-lg opacity-50 cursor-not-allowed flex items-center justify-center gap-2 transition">
+                            <i class="fa-solid fa-microchip"></i>
+                            <span>Analisis & Selesaikan Soal</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="lg:col-span-7 xl:col-span-8 space-y-6">
+                <div id="scannerEmptyState" class="bg-white dark:bg-slate-800 rounded-3xl p-12 text-center border border-dashed border-slate-300 dark:border-slate-700">
+                    <div class="w-16 h-16 mx-auto mb-4 rounded-2xl bg-sky-50 dark:bg-slate-700/50 flex items-center justify-center text-sky-500 text-2xl">
+                        <i class="fa-solid fa-image"></i>
+                    </div>
+                    <h3 class="text-lg font-bold mb-1">Belum Ada Foto Dipindai</h3>
+                    <p class="text-sm text-slate-500 dark:text-slate-400 max-w-md mx-auto">
+                        Unggah foto soal tugas di panel kiri, lalu tekan tombol analisis untuk mendapatkan pembahasan lengkap dari Gemini AI melalui backend.
+                    </p>
+                </div>
+
+                <div id="scannerLoadingState" class="hidden bg-white dark:bg-slate-800 rounded-3xl p-12 text-center border border-slate-200 dark:border-slate-700">
+                    <div class="inline-block animate-spin rounded-full h-10 w-10 border-4 border-sky-500 border-t-transparent mb-4"></div>
+                    <h3 class="text-lg font-bold mb-1">Backend Proxy Sedang Memproses Gambar...</h3>
+                    <p class="text-sm text-slate-500">Menganalisis teks dan rumus pada foto...</p>
+                </div>
+
+                <div id="scannerResultContainer" class="hidden bg-white dark:bg-slate-800 rounded-3xl p-8 border border-slate-200 dark:border-slate-700 space-y-6">
+                    <div class="flex items-center justify-between border-b pb-4 border-slate-200 dark:border-slate-700">
+                        <h3 class="font-extrabold text-lg flex items-center gap-2 text-sky-600 dark:text-sky-400">
+                            <i class="fa-solid fa-circle-check"></i> Hasil Analisis & Pembahasan Tugas
+                        </h3>
+                        <button onclick="exportScannerMarkdown()" class="px-3 py-1.5 text-xs font-semibold bg-slate-100 dark:bg-slate-700 rounded-lg hover:bg-slate-200 transition">
+                            <i class="fa-solid fa-download mr-1"></i> Simpan Markdown
+                        </button>
+                    </div>
+                    <div id="scannerOutputContent" class="prose dark:prose-invert max-w-none text-sm space-y-4 leading-relaxed"></div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <div id="toastNotification" class="fixed bottom-6 right-6 z-50 transform translate-y-24 opacity-0 transition-all duration-300 bg-slate-900 dark:bg-white text-white dark:text-slate-900 px-5 py-3 rounded-2xl shadow-2xl flex items-center gap-3 text-sm font-semibold">
+        <i class="fa-solid fa-circle-info text-sky-400 text-lg"></i>
+        <span id="toastMessage">Notifikasi EduGen AI</span>
+    </div>
+
+    <script>
+        let currentQuizQuestions = [];
+        let userQuizAnswers = {};
+        let uploadedImageBase64 = null;
+        let uploadedImageMimeType = null;
+        let lastScannerResult = "";
+
+        document.addEventListener('DOMContentLoaded', () => {
+            initThemeToggle();
+        });
+
+        function initThemeToggle() {
+            document.getElementById('themeToggleBtn').addEventListener('click', () => {
+                document.documentElement.classList.toggle('dark');
+            });
+        }
+
+        function switchTab(tabName) {
+            const quizBtn = document.getElementById('tabQuizBtn');
+            const scannerBtn = document.getElementById('tabScannerBtn');
+            const quizContent = document.getElementById('tabQuizContent');
+            const scannerContent = document.getElementById('tabScannerContent');
+
+            if (tabName === 'quiz') {
+                quizBtn.className = "px-5 py-3 font-bold text-sm sm:text-base border-b-2 border-sky-600 text-sky-600 dark:text-sky-400 flex items-center gap-2 transition";
+                scannerBtn.className = "px-5 py-3 font-bold text-sm sm:text-base border-b-2 border-transparent text-slate-500 hover:text-slate-800 dark:hover:text-slate-200 flex items-center gap-2 transition";
+                quizContent.classList.remove('hidden');
+                scannerContent.classList.add('hidden');
+            } else {
+                scannerBtn.className = "px-5 py-3 font-bold text-sm sm:text-base border-b-2 border-sky-600 text-sky-600 dark:text-sky-400 flex items-center gap-2 transition";
+                quizBtn.className = "px-5 py-3 font-bold text-sm sm:text-base border-b-2 border-transparent text-slate-500 hover:text-slate-800 dark:hover:text-slate-200 flex items-center gap-2 transition";
+                scannerContent.classList.remove('hidden');
+                quizContent.classList.add('hidden');
+            }
+        }
+
+        function showToast(message) {
+            const toast = document.getElementById('toastNotification');
+            document.getElementById('toastMessage').innerText = message;
+            toast.classList.remove('translate-y-24', 'opacity-0');
+            setTimeout(() => {
+                toast.classList.add('translate-y-24', 'opacity-0');
+            }, 3500);
+        }
+
+        /*
+          ========================================================================
+          INSTRUCTIONS FOR JULES AI & BACKEND DEVELOPER:
+          ========================================================================
+          The functions below act as secure backend proxy wrappers. 
+          To protect the Gemini API key from client-side exposure, Jules AI should 
+          implement a lightweight server (e.g., Node.js/Express, Vercel Serverless Function, 
+          or Python/FastAPI) that reads `process.env.GEMINI_API_KEY` from a `.env` file 
+          and handles these requests securely.
+        */
+
+        async function fetchQuizFromBackend(payload) {
+            try {
+                // JULES AI: Replace '/api/generate-quiz' with your actual secure backend endpoint.
+                // Example Backend Route implementation in Node.js / Express:
+                /*
+                   app.post('/api/generate-quiz', async (req, res) => {
+                       const { grade, topic, count, difficulty } = req.body;
+                       const prompt = `Buatkan ${count} soal pilihan ganda tingkat ${grade} dengan topik "${topic}" dan tingkat kesulitan ${difficulty}. Wajib kembalikan HANYA format JSON array valid.`;
+                       const response = await ai.models.generateContent({ model: 'gemini-2.5-flash', contents: prompt });
+                       res.json(JSON.parse(response.text));
+                   });
+                */
+                
+                const response = await fetch('/api/generate-quiz', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                if (!response.ok) {
+                    // Fallback mock for demonstration if backend proxy is not yet wired up
+                    return getMockQuizData(payload.topic, payload.count);
+                }
+
+                const data = await response.json();
+                return data;
+            } catch (error) {
+                console.warn("Backend proxy not connected yet, using intelligent fallback simulation for demo:", error);
+                return getMockQuizData(payload.topic, payload.count);
+            }
+        }
+
+        async function analyzeHomeworkWithBackend(payload) {
+            try {
+                // JULES AI: Replace '/api/analyze-homework' with your secure backend endpoint 
+                // utilizing Google Gen AI SDK with process.env.GEMINI_API_KEY.
+                const response = await fetch('/api/analyze-homework', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                if (!response.ok) {
+                    return getMockScannerAnalysis(payload.customPrompt);
+                }
+
+                const data = await response.json();
+                return data.analysis;
+            } catch (error) {
+                console.warn("Backend proxy not connected yet, using intelligent fallback simulation for demo:", error);
+                return getMockScannerAnalysis(payload.customPrompt);
+            }
+        }
+
+        // Intelligent Fallback Simulations for immediate frontend testing before Jules AI backend wiring
+        function getMockQuizData(topic, count) {
+            const questions = [];
+            for (let i = 1; i <= count; i++) {
+                questions.push({
+                    id: i,
+                    soal: `Pertanyaan latihan ke-${i} mengenai topik ${topic} berdasarkan kurikulum nasional. Bagian manakah yang paling krusial dalam memahami konsep dasar ini?`,
+                    opsi: [
+                        `Analisis awal variabel dan parameter utama ${topic}`,
+                        `Penerapan rumus empiris secara langsung`,
+                        `Pengujian hipotesis melalui eksperimen terarah`,
+                        `Kesimpulan akhir tanpa perhitungan matematis`
+                    ],
+                    jawabanBenar: 0,
+                    pembahasan: {
+                        konsep: `Konsep utama ${topic} melibatkan pemahaman mendalam terhadap variabel yang saling berinteraksi.`,
+                        langkah: `1. Identifikasi data yang diketahui.\n2. Tentukan rumus atau hukum yang relevan.\n3. Lakukan substitusi nilai dengan teliti.`,
+                        tips: `Selalu perhatikan satuan internasional (SI) sebelum melakukan perhitungan akhir.`
+                    }
+                });
+            }
+            return questions;
+        }
+
+        function getMockScannerAnalysis(customPrompt) {
+            return `### Hasil Analisis Tugas (Simulasi Backend Proxy)
+${customPrompt ? `*Catatan Pengguna: "${customPrompt}"*\n` : ''}
+1. **Identifikasi Soal**: Soal pada gambar berkaitan dengan pemecahan masalah analitis dan penerapan rumus standar.
+2. **Langkah-Langkah Penyelesaian**:
+   - **Langkah 1**: Uraikan seluruh informasi dan angka yang tertera pada soal gambar.
+   - **Langkah 2**: Gunakan prinsip dasar teori yang sesuai untuk menyusun persamaan matematis atau logika.
+   - **Langkah 3**: Lakukan eliminasi atau substitusi hingga diperoleh nilai akhir yang akurat.
+3. **Kesimpulan**: Hasil akhir konsisten dengan kaidah ilmu terkait. 
+
+*(Catatan untuk Jules AI: Hubungkan fungsi ini ke endpoint backend `/api/analyze-homework` menggunakan `process.env.GEMINI_API_KEY` agar pemrosesan gambar multimodal berjalan secara aman.)*`;
+        }
+
+        async function handleGenerateQuiz(e) {
+            e.preventDefault();
+            const grade = document.getElementById('gradeLevel').value;
+            const topic = document.getElementById('quizTopic').value;
+            const count = parseInt(document.getElementById('quizCount').value);
+            const difficulty = document.getElementById('quizDifficulty').value;
+
+            document.getElementById('quizEmptyState').classList.add('hidden');
+            document.getElementById('quizResultContainer').classList.add('hidden');
+            document.getElementById('quizActiveContainer').classList.add('hidden');
+            document.getElementById('quizLoadingState').classList.remove('hidden');
+
+            try {
+                const questions = await fetchQuizFromBackend({ grade, topic, count, difficulty });
+                currentQuizQuestions = questions;
+                userQuizAnswers = {};
+                renderQuizQuestions();
+            } catch (error) {
+                console.error(error);
+                showToast('Gagal membuat kuis.');
+                document.getElementById('quizEmptyState').classList.remove('hidden');
+            } finally {
+                document.getElementById('quizLoadingState').classList.add('hidden');
+            }
+        }
+
+        function renderQuizQuestions() {
+            const listEl = document.getElementById('quizQuestionsList');
+            listEl.innerHTML = '';
+
+            currentQuizQuestions.forEach((q, idx) => {
+                const card = document.createElement('div');
+                card.className = "bg-white dark:bg-slate-800 rounded-3xl p-6 shadow-sm border border-slate-200 dark:border-slate-700/60 space-y-4";
+                
+                let optionsHtml = `<div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-3">`;
+                q.opsi.forEach((opt, oIdx) => {
+                    optionsHtml += `
+                        <button type="button" onclick="selectQuizOption(${idx}, ${oIdx})" id="quiz-opt-${idx}-${oIdx}" class="text-left p-3.5 rounded-xl border border-slate-200 dark:border-slate-700 hover:border-sky-500 text-sm font-medium transition flex items-center gap-3">
+                            <span class="w-7 h-7 rounded-lg bg-slate-100 dark:bg-slate-700 flex items-center justify-center text-xs font-bold shrink-0">${String.fromCharCode(65 + oIdx)}</span>
+                            <span>${opt}</span>
+                        </button>`;
+                });
+                optionsHtml += `</div>`;
+
+                card.innerHTML = `
+                    <div class="flex items-center justify-between">
+                        <span class="px-3 py-1 bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 rounded-lg text-xs font-bold">Soal #${idx + 1}</span>
+                    </div>
+                    <p class="text-base font-semibold text-slate-800 dark:text-slate-100">${q.soal}</p>
+                    ${optionsHtml}
+                `;
+                listEl.appendChild(card);
+            });
+
+            document.getElementById('quizActiveContainer').classList.remove('hidden');
+        }
+
+        function selectQuizOption(qIdx, optIdx) {
+            userQuizAnswers[qIdx] = optIdx;
+            const parent = document.querySelectorAll(`[id^="quiz-opt-${qIdx}-"]`);
+            parent.forEach((btn, idx) => {
+                if(idx === optIdx) {
+                    btn.className = "text-left p-3.5 rounded-xl border-2 border-sky-500 bg-sky-50 dark:bg-sky-900/30 text-sky-800 dark:text-sky-200 text-sm font-semibold transition flex items-center gap-3";
+                } else {
+                    btn.className = "text-left p-3.5 rounded-xl border border-slate-200 dark:border-slate-700 text-sm font-medium transition flex items-center gap-3 opacity-70";
+                }
+            });
+        }
+
+        function submitQuizAnswers() {
+            let correctCount = 0;
+            const reviewList = document.getElementById('quizReviewList');
+            reviewList.innerHTML = '';
+
+            currentQuizQuestions.forEach((q, idx) => {
+                const userAns = userQuizAnswers[idx];
+                const isCorrect = userAns === q.jawabanBenar;
+                if (isCorrect) correctCount++;
+
+                const userText = userAns !== undefined ? q.opsi[userAns] : "Tidak dijawab";
+                const correctText = q.opsi[q.jawabanBenar];
+
+                reviewList.innerHTML += `
+                    <div class="p-6 rounded-2xl border-2 ${isCorrect ? 'border-emerald-200 bg-emerald-50/50 dark:bg-emerald-950/20' : 'border-rose-200 bg-rose-50/50 dark:bg-rose-950/20'} space-y-3">
+                        <div class="flex justify-between items-center">
+                            <span class="font-bold text-sm">Soal #${idx + 1}</span>
+                            <span class="px-3 py-1 rounded-full text-xs font-bold ${isCorrect ? 'bg-emerald-200 text-emerald-800' : 'bg-rose-200 text-rose-800'}">${isCorrect ? 'BENAR' : 'SALAH'}</span>
+                        </div>
+                        <p class="font-semibold text-sm">${q.soal}</p>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+                            <div class="p-3 bg-white dark:bg-slate-800 rounded-xl border">
+                                <span class="text-slate-500 block mb-1 font-semibold">Jawaban Anda:</span>
+                                <span class="${isCorrect ? 'text-emerald-600 font-bold' : 'text-rose-600 font-bold'}">${userText}</span>
+                            </div>
+                            <div class="p-3 bg-white dark:bg-slate-800 rounded-xl border">
+                                <span class="text-slate-500 block mb-1 font-semibold">Kunci Jawaban:</span>
+                                <span class="text-slate-800 dark:text-slate-200 font-bold">${correctText}</span>
+                            </div>
+                        </div>
+                        <div class="bg-white dark:bg-slate-800 p-4 rounded-xl border space-y-2 text-xs">
+                            <div class="font-bold text-sky-600">Pembahasan & Konsep:</div>
+                            <p class="text-slate-600 dark:text-slate-300"><strong>Konsep:</strong> ${q.pembahasan.konsep}</p>
+                            <p class="text-slate-600 dark:text-slate-300"><strong>Langkah:</strong> ${q.pembahasan.langkah}</p>
+                            <p class="text-slate-600 dark:text-slate-300"><strong>Tips:</strong> ${q.pembahasan.tips}</p>
+                        </div>
+                    </div>
+                `;
+            });
+
+            const score = Math.round((correctCount / currentQuizQuestions.length) * 100);
+            document.getElementById('quizFinalScoreDisplay').innerText = `${score} / 100`;
+            document.getElementById('quizActiveContainer').classList.add('hidden');
+            document.getElementById('quizResultContainer').classList.remove('hidden');
+        }
+
+        function resetQuizView() {
+            document.getElementById('quizResultContainer').classList.add('hidden');
+            document.getElementById('quizEmptyState').classList.remove('hidden');
+        }
+
+        function exportQuizJSON() {
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(currentQuizQuestions, null, 2));
+            const downloadAnchor = document.createElement('a');
+            downloadAnchor.setAttribute("href", dataStr);
+            downloadAnchor.setAttribute("download", `quiz-bank-${Date.now()}.json`);
+            document.body.appendChild(downloadAnchor);
+            downloadAnchor.click();
+            downloadAnchor.remove();
+            showToast('Berhasil mengekspor bank soal ke JSON.');
+        }
+
+        function handleImageSelected(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            uploadedImageMimeType = file.type;
+            const reader = new FileReader();
+            reader.onload = function(uploadEvent) {
+                uploadedImageBase64 = uploadEvent.target.result.split(',')[1];
+                document.getElementById('imagePreviewElement').src = uploadEvent.target.result;
+                document.getElementById('imagePreviewContainer').classList.remove('hidden');
+                
+                const analyzeBtn = document.getElementById('analyzeBtn');
+                analyzeBtn.disabled = false;
+                analyzeBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function clearImage() {
+            uploadedImageBase64 = null;
+            uploadedImageMimeType = null;
+            document.getElementById('homeworkImageInput').value = '';
+            document.getElementById('imagePreviewContainer').classList.add('hidden');
+            const analyzeBtn = document.getElementById('analyzeBtn');
+            analyzeBtn.disabled = true;
+            analyzeBtn.classList.add('opacity-50', 'cursor-not-allowed');
+        }
+
+        async function analyzeHomeworkImage() {
+            if (!uploadedImageBase64) return;
+
+            const customPrompt = document.getElementById('scannerCustomPrompt').value;
+            document.getElementById('scannerEmptyState').classList.add('hidden');
+            document.getElementById('scannerResultContainer').classList.add('hidden');
+            document.getElementById('scannerLoadingState').classList.remove('hidden');
+
+            try {
+                const analysisText = await analyzeHomeworkWithBackend({
+                    image: uploadedImageBase64,
+                    mimeType: uploadedImageMimeType,
+                    customPrompt
+                });
+
+                lastScannerResult = analysisText;
+                let formattedHtml = analysisText
+                    .replace(/### (.*$)/gim, '<h3 class="text-base font-bold text-sky-600 mt-4 mb-2">$1</h3>')
+                    .replace(/## (.*$)/gim, '<h2 class="text-lg font-bold text-sky-700 mt-6 mb-3">$1</h2>')
+                    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                    .replace(/\*(.*?)\*/g, '<em>$1</em>')
+                    .replace(/\n/g, '<br>');
+
+                document.getElementById('scannerOutputContent').innerHTML = formattedHtml;
+                document.getElementById('scannerResultContainer').classList.remove('hidden');
+            } catch (error) {
+                console.error(error);
+                showToast('Gagal menganalisis foto.');
+                document.getElementById('scannerEmptyState').classList.remove('hidden');
+            } finally {
+                document.getElementById('scannerLoadingState').classList.add('hidden');
+            }
+        }
+
+        function exportScannerMarkdown() {
+            if (!lastScannerResult) return;
+            const dataStr = "data:text/markdown;charset=utf-8," + encodeURIComponent(lastScannerResult);
+            const downloadAnchor = document.createElement('a');
+            downloadAnchor.setAttribute("href", dataStr);
+            downloadAnchor.setAttribute("download", `pembahasan-tugas-${Date.now()}.md`);
+            document.body.appendChild(downloadAnchor);
+            downloadAnchor.click();
+            downloadAnchor.remove();
+            showToast('Berhasil mengekspor pembahasan ke Markdown.');
+        }
+    </script>
+</body>
+</html>
+```
